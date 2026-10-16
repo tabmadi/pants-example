@@ -1,6 +1,6 @@
 python_requirement(
     name="numpy",
-    requirements=["numpy==1.23.2"],
+    requirements=["numpy==2.3.4"],
 )
 
 python_sources(

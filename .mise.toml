@@ -1,0 +1,58 @@
+# Every tool that the repo needs is pinned here. `mise install` installs them.
+# The launcher reads pants_version from pants.toml and downloads that Pants. Docker comes from the host.
+
+[tools]
+python = "3.13"
+"github:pantsbuild/scie-pants" = { version = "0.13.2", bin = "pants" }
+lefthook = "2.2.2"
+cocogitto = "7.0.0"
+gitleaks = "8.30.1"
+rumdl = "0.2.79"
+
+[tasks.setup]
+description = "Download Pants and install the git hooks"
+run = ["pants --version", "lefthook install"]
+
+[tasks.list]
+description = "List every target that Pants knows"
+run = "pants list ::"
+
+[tasks.build]
+description = "Package every PEX binary into dist/"
+run = "pants --filter-target-type=pex_binary package ::"
+
+[tasks.image]
+description = "Build the Docker image of srv1"
+run = "pants package srvs/srv1:mono-srv1"
+
+[tasks.test]
+description = "Run every test target"
+run = "pants test ::"
+
+[tasks."lint:py"]
+description = "Black and hadolint, through Pants"
+run = "pants lint ::"
+
+[tasks."lint:md"]
+description = "Markdown structure and formatting"
+run = "rumdl check ."
+
+[tasks."lint:secrets"]
+description = "Scan the working tree for committed secrets"
+run = "gitleaks dir . --no-banner"
+
+[tasks.lint]
+description = "Every linter"
+depends = ["lint:py", "lint:md", "lint:secrets"]
+
+[tasks.format]
+description = "Apply every formatter"
+run = ["pants fmt ::", "rumdl check --fix ."]
+
+[tasks.check]
+description = "The gate: run it before you finish a change"
+run = ["mise run lint", "mise run test"]
+
+[tasks.ci]
+description = "Run exactly what CI runs. The pre-push hook and the CI workflow call it"
+run = ["mise run check", "mise run build"]

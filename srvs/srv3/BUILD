@@ -1,7 +1,7 @@
 python_sources(
     name="lib",
     dependencies=[
-        "libs/lib1:lib1",
+        "libs/lib2:lib2",
     ]
 )
 

@@ -1,6 +1,6 @@
 python_requirement(
     name="django",
-    requirements=["django==4.1.1"],
+    requirements=["django==5.2.7"],
 )
 
 
